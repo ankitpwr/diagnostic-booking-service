@@ -14,8 +14,8 @@ function getJwtSecret() {
   return secret;
 }
 
-function setAuthCookie(res: Response, token: string) {
-  res.cookie("token", token, {
+function setAuthCookie(res: Response, cookieName: string, token: string) {
+  res.cookie(cookieName, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",
     sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
@@ -105,7 +105,7 @@ export async function loginController(req: Request, res: Response) {
       { expiresIn: "7d" },
     );
 
-    setAuthCookie(res, token);
+    setAuthCookie(res, "userToken", token);
 
     return res.status(200).json({ token, message: "login successful" });
   } catch (error) {
@@ -155,7 +155,7 @@ export async function adminLoginController(req: Request, res: Response) {
       { expiresIn: "7d" },
     );
 
-    setAuthCookie(res, token);
+    setAuthCookie(res, "adminToken", token);
 
     return res.status(200).json({ token, message: "admin login successful" });
   } catch (error) {

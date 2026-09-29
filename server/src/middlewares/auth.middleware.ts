@@ -19,10 +19,11 @@ function authenticateRequest(
   req: Request,
   res: Response,
   next: NextFunction,
-  requiredRole?: UserRole,
+  requiredRole: UserRole,
 ) {
   try {
-    const token = req.cookies?.token || "";
+    const cookieName = requiredRole === "ADMIN" ? "adminToken" : "userToken";
+    const token = req.cookies?.[cookieName] || "";
     if (!token) {
       return res.status(401).json({
         error: requiredRole

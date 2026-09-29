@@ -3,6 +3,7 @@ import { addTestsSchema, testIdSchema } from "../lib/zod-schema";
 import { db } from "../db/db";
 import { diagnosticCenterTable, testsTable } from "../db/schema";
 import { eq } from "drizzle-orm";
+import { redisClient } from "../lib/redis";
 
 export async function addTest(req: Request, res: Response) {
   try {
@@ -49,6 +50,16 @@ export async function testDetails(req: Request, res: Response) {
         error: parsedParams.error.issues[0]?.message,
       });
     }
+
+    const cachedData = await redisClient.get(
+      `test-details-${parsedParams.data.testId}`,
+    );
+
+    if (cachedData) {
+      return res.status(200).json({
+        data: JSON.parse(cachedData),
+      });
+    }
     const [test] = await db
       .select()
       .from(testsTable)
@@ -59,6 +70,13 @@ export async function testDetails(req: Request, res: Response) {
         error: "test does not exists",
       });
     }
+
+    await redisClient.set(
+      `test-details-${parsedParams.data.testId}`,
+      JSON.stringify(test),
+      "EX",
+      900,
+    );
     return res.status(200).json({
       data: test,
     });

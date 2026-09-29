@@ -1,0 +1,23 @@
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: alpine-redis
+    ports:
+      - 6379:6379
+
+  api:
+    image: ankitpwr/diagnose-api
+    build:
+      context: ./server
+      dockerfile: Dockerfile
+    container_name: diagnose-api
+    environment:
+      NODE_OPTIONS: "--dns-result-order=ipv4first"
+    sysctls:
+      - net.ipv6.conf.all.disable_ipv6=1
+    ports:
+      - 3000:3000
+    env_file:
+      - ./server/.env
+    depends_on:
+      - redis

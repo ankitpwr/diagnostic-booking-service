@@ -7,6 +7,7 @@ import {
 import { db } from "../db/db";
 import { diagnosticCenterTable, testsTable } from "../db/schema";
 import { asc, eq } from "drizzle-orm";
+import { clearDiagnosticCentersCache, redisClient } from "../lib/redis";
 
 export async function addCenter(req: Request, res: Response) {
   try {
@@ -20,6 +21,7 @@ export async function addCenter(req: Request, res: Response) {
       name: parsedData.data.name,
       location: parsedData.data.location,
     });
+    await clearDiagnosticCentersCache();
     return res.status(200).json({
       message: "diagnostic center added successfully",
     });
@@ -44,6 +46,7 @@ export async function removeCenter(req: Request, res: Response) {
       .delete(diagnosticCenterTable)
       .where(eq(diagnosticCenterTable.id, parsedParams.data.centerId));
 
+    await clearDiagnosticCentersCache();
     return res.status(200).json({
       message: "center deleted",
     });
@@ -63,6 +66,17 @@ export async function getDiagnosticCenters(req: Request, res: Response) {
         error: parsedQuery.error.issues[0]?.message,
       });
     }
+
+    const cachedData = await redisClient.get(
+      `diagnostic-centers-${parsedQuery.data.pageNumber}`,
+    );
+
+    if (cachedData) {
+      return res.status(200).json({
+        data: JSON.parse(cachedData),
+      });
+    }
+
     const pageSize = 10;
     const centers = await db
       .select()
@@ -70,6 +84,13 @@ export async function getDiagnosticCenters(req: Request, res: Response) {
       .orderBy(asc(diagnosticCenterTable.id))
       .limit(pageSize)
       .offset((parsedQuery.data.pageNumber - 1) * pageSize);
+
+    await redisClient.set(
+      `diagnostic-centers-${parsedQuery.data.pageNumber}`,
+      JSON.stringify(centers),
+      "EX",
+      900,
+    );
 
     return res.status(200).json({
       data: centers,
