@@ -9,10 +9,16 @@ import {
   cancelBooking,
   getBooking,
 } from "../controllers/booking.controller";
+import { rateLimitMiddleware } from "../middlewares/ratelimit.middleware";
 
 export const bookingRouter = Router();
 
 bookingRouter.post("/", userAuthMiddleware, booking);
-bookingRouter.get("/:bookingId", userAuthMiddleware, getBooking);
+bookingRouter.get(
+  "/:bookingId",
+  rateLimitMiddleware,
+  userAuthMiddleware,
+  getBooking,
+);
 bookingRouter.patch("/:bookingId/cancel", userAuthMiddleware, cancelBooking);
 bookingRouter.delete("/cancel/:bookingId", userAuthMiddleware, cancelBooking);

@@ -13,7 +13,7 @@ Backend service for diagnostic-centre test bookings and simulated payments, buil
 - Zod request validation
 - Docker Compose
 
-## Run Locally
+## Run Locally without docker
 
 Prerequisites:
 
@@ -85,24 +85,24 @@ Successful login sets an HTTP-only `token` cookie. Authenticated requests should
 
 Base URL: `http://localhost:3000/api/v1`
 
-| Method | Endpoint | Access | Description |
-| --- | --- | --- | --- |
-| POST | `/auth/signup` | Public | Create a user account |
-| POST | `/auth/login` | Public | Log in as a user |
-| POST | `/auth/admin/login` | Public | Log in using the seeded admin account |
-| GET | `/diagnostic-centers?pageNumber=1` | User | List diagnostic centres with page-number pagination |
-| GET | `/diagnostic-centers/:centerId/tests` | User | List tests available at a centre |
-| POST | `/diagnostic-centers/add-center` | Admin | Add a diagnostic centre |
-| DELETE | `/diagnostic-centers/:centerId` | Admin | Delete a diagnostic centre |
-| GET | `/tests/:testId` | User | Get test details and price |
-| POST | `/tests/add` | Admin | Add a test to a diagnostic centre |
-| POST | `/bookings` | User | Create a pending booking |
-| GET | `/bookings/:bookingId` | User | Get an owned booking and latest payment |
-| PATCH | `/bookings/:bookingId/cancel` | User | Cancel a pending owned booking |
-| DELETE | `/bookings/cancel/:bookingId` | User | Alternate cancellation endpoint |
-| POST | `/payments` | User | Start simulated payment for an owned booking |
-| GET | `/payments/:paymentId` | User | Get an owned payment |
-| POST | `/payments/webhook` | Provider | Process a simulated payment status update |
+| Method | Endpoint                              | Access   | Description                                         |
+| ------ | ------------------------------------- | -------- | --------------------------------------------------- |
+| POST   | `/auth/signup`                        | Public   | Create a user account                               |
+| POST   | `/auth/login`                         | Public   | Log in as a user                                    |
+| POST   | `/auth/admin/login`                   | Public   | Log in using the seeded admin account               |
+| GET    | `/diagnostic-centers?pageNumber=1`    | User     | List diagnostic centres with page-number pagination |
+| GET    | `/diagnostic-centers/:centerId/tests` | User     | List tests available at a centre                    |
+| POST   | `/diagnostic-centers/add-center`      | Admin    | Add a diagnostic centre                             |
+| DELETE | `/diagnostic-centers/:centerId`       | Admin    | Delete a diagnostic centre                          |
+| GET    | `/tests/:testId`                      | User     | Get test details and price                          |
+| POST   | `/tests/add`                          | Admin    | Add a test to a diagnostic centre                   |
+| POST   | `/bookings`                           | User     | Create a pending booking                            |
+| GET    | `/bookings/:bookingId`                | User     | Get an owned booking and latest payment             |
+| PATCH  | `/bookings/:bookingId/cancel`         | User     | Cancel a pending owned booking                      |
+| DELETE | `/bookings/cancel/:bookingId`         | User     | Alternate cancellation endpoint                     |
+| POST   | `/payments`                           | User     | Start simulated payment for an owned booking        |
+| GET    | `/payments/:paymentId`                | User     | Get an owned payment                                |
+| POST   | `/payments/webhook`                   | Provider | Process a simulated payment status update           |
 
 ## Booking and Payment Flow
 

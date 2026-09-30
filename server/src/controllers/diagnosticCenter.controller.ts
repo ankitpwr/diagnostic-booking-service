@@ -17,13 +17,17 @@ export async function addCenter(req: Request, res: Response) {
         error: parsedData.error.issues[0]?.message,
       });
     }
-    await db.insert(diagnosticCenterTable).values({
-      name: parsedData.data.name,
-      location: parsedData.data.location,
-    });
+    const [data] = await db
+      .insert(diagnosticCenterTable)
+      .values({
+        name: parsedData.data.name,
+        location: parsedData.data.location,
+      })
+      .returning({ diagnosticCenterId: diagnosticCenterTable.id });
     await clearDiagnosticCentersCache();
     return res.status(200).json({
       message: "diagnostic center added successfully",
+      diagnosticCenterId: data?.diagnosticCenterId,
     });
   } catch (error) {
     console.log("error in add center controller");

@@ -5,9 +5,10 @@ import {
   loginController,
   signupController,
 } from "../controllers/auth.controller";
+import { rateLimitMiddleware } from "../middlewares/ratelimit.middleware";
 
 export const authRouter = Router();
 
-authRouter.post("/signup", signupController);
-authRouter.post("/login", loginController);
+authRouter.post("/signup", rateLimitMiddleware, signupController);
+authRouter.post("/login", rateLimitMiddleware, loginController);
 authRouter.post("/admin/login", adminLoginController);

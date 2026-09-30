@@ -25,14 +25,22 @@ export async function addTest(req: Request, res: Response) {
       });
     }
 
-    await db.insert(testsTable).values({
-      name: parsedData.data.name,
-      price: parsedData.data.price,
-      diagnosticCenterId: parsedData.data.diagnosticCenterId,
-    });
+    const [data] = await db
+      .insert(testsTable)
+      .values({
+        name: parsedData.data.name,
+        price: parsedData.data.price,
+        diagnosticCenterId: parsedData.data.diagnosticCenterId,
+      })
+      .returning({
+        id: testsTable.id,
+        diagnosticCenterId: testsTable.diagnosticCenterId,
+      });
 
     return res.status(200).json({
       message: "test added successfully",
+      testId: data?.id,
+      diagnosticCenterId: data?.diagnosticCenterId,
     });
   } catch (error) {
     console.log("error in add test controller", error);

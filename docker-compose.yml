@@ -11,10 +11,6 @@ services:
       context: ./server
       dockerfile: Dockerfile
     container_name: diagnose-api
-    environment:
-      NODE_OPTIONS: "--dns-result-order=ipv4first"
-    sysctls:
-      - net.ipv6.conf.all.disable_ipv6=1
     ports:
       - 3000:3000
     env_file:
